@@ -66,12 +66,25 @@ def liquidar_bono(f_emision, f_vcto, f_nego, tasa_facial, tasa_nego, periodicida
 # --- INTERFAZ GRÁFICA DE STREAMLIT ---
 st.set_page_config(page_title="Liquidador de TES", page_icon="📈", layout="centered")
 
-# Reemplaza la URL de ejemplo por tu nuevo enlace entre las comillas
-url_de_tu_logo = "https://i.postimg.cc/hjD3N0Qs/IMG-6998.png"
-st.markdown(f'<link rel="apple-touch-icon" href="furl_de_tu_logo}"›', unsafe_allow_html=True)
+# --- CÓDIGO DE INYECCIÓN CORREGIDO Y CONSOLIDADO (COPIAR ESTO COMPLETO) ---
+# El error anterior "SyntaxError: single '}' is not allowed" se debe a que las f-strings
+# de Python chocan con las llaves literales { } que a veces se usan en HTML/CSS.
+# La mejor forma es usar una triple comilla y el método .format() para inyectar
+# la URL limpiamente sin conflictos.
 
-st.title("📈 Liquidador de Bonos de Largo Plazo (TES)")
-st.markdown("Introduce los parámetros del título para calcular el precio limpio y sucio.")
+# Define tu enlace final .jpg o .png (ej: de GitHub raw)
+url_de_tu_logo = "https://i.postimg.cc/hjd3N0Qs/IMG-6998.png" # <- Cambia este enlace por el tuyo
+
+html_inyeccion = """
+<link rel="apple-touch-icon" sizes="180x180" href="{}">
+<link rel="icon" type="image/png" sizes="32x32" href="{}">
+<link rel="icon" type="image/png" sizes="16x16" href="{}">
+""".format(url_de_tu_logo, url_de_tu_logo, url_de_tu_logo)
+
+# El código de arriba asegura que el iPhone reconozca el icono de "apple-touch-icon" correctamente.
+st.markdown(html_inyeccion, unsafe_allow_html=True)
+
+# st.title("📈 Liquidador de TES Colombianos") # Continúa tu código aquí
 
 st.sidebar.header("Parámetros del Bono")
 
