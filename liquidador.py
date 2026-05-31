@@ -71,10 +71,13 @@ st.markdown("Introduce los parámetros del título para calcular el precio limpi
 
 st.sidebar.header("Parámetros del Bono")
 
-# Inputs de fechas
-f_emision = st.sidebar.date_input("Fecha de Emisión", datetime(2024, 1, 1))
-f_vcto = st.sidebar.date_input("Fecha de Vencimiento", datetime(2034, 1, 1))
-f_nego = st.sidebar.date_input("Fecha de Negociación", datetime.now().date())
+# Inputs de fechas (Definiendo un rango amplio desde el año 2000 hasta el 2100)
+fecha_minima = datetime(2000, 1, 1)
+fecha_maxima = datetime(2100, 1, 1)
+
+f_emision = st.sidebar.date_input("Fecha de Emisión", datetime(2025, 3, 13), min_value=fecha_minima, max_value=fecha_maxima)
+f_vcto = st.sidebar.date_input("Fecha de Vencimiento", datetime(2058, 1, 28), min_value=fecha_minima, max_value=fecha_maxima)
+f_nego = st.sidebar.date_input("Fecha de Negociación", datetime.now().date(), min_value=fecha_minima, max_value=fecha_maxima)
 
 # Inputs de Tasas
 tasa_facial_pct = st.sidebar.number_input("Tasa Facial / Cupón Anual (%)", min_value=0.0, max_value=30.0, value=7.5, step=0.05)
