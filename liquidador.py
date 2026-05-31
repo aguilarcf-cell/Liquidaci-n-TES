@@ -1,6 +1,26 @@
 import streamlit as st
 from datetime import datetime
 
+# ⚠️ set_page_config SIEMPRE debe ser la primera línea de Streamlit
+st.set_page_config(
+    page_title="Liquidador de TES",
+    page_icon="📈",
+    layout="centered"
+)
+
+# --- Ícono personalizado para iPhone (apple-touch-icon) ---
+url_logo = "https://i.postimg.cc/hjD3N0Qs/IMG-6998.png"
+
+st.markdown(
+    f"""
+    <link rel="apple-touch-icon" sizes="180x180" href="{url_logo}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{url_logo}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{url_logo}">
+    """,
+    unsafe_allow_html=True
+)
+
+# --- Lógica del liquidador ---
 def liquidar_bono(f_emision, f_vcto, f_nego, tasa_facial, tasa_nego, periodicidad=1):
     """
     Liquidador estándar para TES Colombianos (Periodicidad Anual, Base ACT/365)
@@ -8,10 +28,10 @@ def liquidar_bono(f_emision, f_vcto, f_nego, tasa_facial, tasa_nego, periodicida
     if f_nego < f_emision or f_nego > f_vcto:
         st.error("Error: La fecha de negociación debe estar entre la emisión y el vencimiento.")
         return None
-        
+
     tasa_cupon_periodo = tasa_facial / periodicidad
     tasa_nego_periodo = tasa_nego / periodicidad
-    
+
     # Generar fechas de cupones retrocediendo desde el vencimiento
     fechas_cupones = []
     temp_fecha = f_vcto
@@ -25,36 +45,36 @@ def liquidar_bono(f_emision, f_vcto, f_nego, tasa_facial, tasa_nego, periodicida
     # Identificar cupones clave alrededor de la negociación
     cupon_anterior = f_emision
     cupon_siguiente = fechas_cupones[0]
-    
+
     for c in fechas_cupones:
         if c >= f_nego:
             cupon_siguiente = c
             break
         cupon_anterior = c
-        
+
     # Cálculo de días (Base ACT/365)
     dias_desde_ultimo_cupon = (f_nego - cupon_anterior).days
     dias_totales_periodo = (cupon_siguiente - cupon_anterior).days
-    
+
     fraccion_periodo_transcurrido = dias_desde_ultimo_cupon / dias_totales_periodo if dias_totales_periodo > 0 else 0
     interes_corrido = 100 * tasa_cupon_periodo * fraccion_periodo_transcurrido
-    
+
     # Valor presente de los flujos remanentes (Precio Sucio)
     t_proximo = (cupon_siguiente - f_nego).days / dias_totales_periodo
     precio_sucio = 0
     flujos_restantes = [c for c in fechas_cupones if c >= f_nego]
-    
+
     for i, f in enumerate(flujos_restantes):
-        n = t_proximo + i 
+        n = t_proximo + i
         es_ultimo = (i == len(flujos_restantes) - 1)
         flujo_caja = 100 * tasa_cupon_periodo
         if es_ultimo:
-            flujo_caja += 100 
-            
+            flujo_caja += 100
+
         precio_sucio += flujo_caja / ((1 + tasa_nego_periodo) ** n)
-        
+
     precio_limpio = precio_sucio - interes_corrido
-    
+
     return {
         "Precio Sucio": precio_sucio,
         "Precio Limpio": precio_limpio,
@@ -63,58 +83,35 @@ def liquidar_bono(f_emision, f_vcto, f_nego, tasa_facial, tasa_nego, periodicida
         "Proximo Cupon": cupon_siguiente
     }
 
-# --- INTERFAZ GRÁFICA DE STREAMLIT ---
-st.set_page_config(page_title="Liquidador de TES", page_icon="📈", layout="centered")
 
-# --- CÓDIGO DE INYECCIÓN CORREGIDO Y CONSOLIDADO (COPIAR ESTO COMPLETO) ---
-# El error anterior "SyntaxError: single '}' is not allowed" se debe a que las f-strings
-# de Python chocan con las llaves literales { } que a veces se usan en HTML/CSS.
-# La mejor forma es usar una triple comilla y el método .format() para inyectar
-# la URL limpiamente sin conflictos.
-
-# Define tu enlace final .jpg o .png (ej: de GitHub raw)
-url_de_tu_logo = "https://i.postimg.cc/hjd3N0Qs/IMG-6998.png" # <- Cambia este enlace por el tuyo
-
-html_inyeccion = """
-<link rel="apple-touch-icon" sizes="180x180" href="{}">
-<link rel="icon" type="image/png" sizes="32x32" href="{}">
-<link rel="icon" type="image/png" sizes="16x16" href="{}">
-""".format(url_de_tu_logo, url_de_tu_logo, url_de_tu_logo)
-
-# El código de arriba asegura que el iPhone reconozca el icono de "apple-touch-icon" correctamente.
-st.markdown(html_inyeccion, unsafe_allow_html=True)
-
-# st.title("📈 Liquidador de TES Colombianos") # Continúa tu código aquí
-
+# --- Interfaz ---
 st.sidebar.header("Parámetros del Bono")
 
-# Inputs de fechas (Definiendo un rango amplio desde el año 2000 hasta el 2100)
 fecha_minima = datetime(2000, 1, 1)
 fecha_maxima = datetime(2100, 1, 1)
 
 f_emision = st.sidebar.date_input("Fecha de Emisión", datetime(2025, 3, 13), min_value=fecha_minima, max_value=fecha_maxima)
-f_vcto = st.sidebar.date_input("Fecha de Vencimiento", datetime(2058, 1, 28), min_value=fecha_minima, max_value=fecha_maxima)
-f_nego = st.sidebar.date_input("Fecha de Negociación", datetime.now().date(), min_value=fecha_minima, max_value=fecha_maxima)
+f_vcto    = st.sidebar.date_input("Fecha de Vencimiento", datetime(2058, 1, 28), min_value=fecha_minima, max_value=fecha_maxima)
+f_nego    = st.sidebar.date_input("Fecha de Negociación", datetime.now().date(), min_value=fecha_minima, max_value=fecha_maxima)
 
-# Inputs de Tasas
 tasa_facial_pct = st.sidebar.number_input("Tasa Facial / Cupón Anual (%)", min_value=0.0, max_value=30.0, value=7.5, step=0.05)
-tasa_nego_pct = st.sidebar.number_input("Tasa de Negociación / YTM (%)", min_value=0.0, max_value=30.0, value=9.2, step=0.05)
+tasa_nego_pct   = st.sidebar.number_input("Tasa de Negociación / YTM (%)", min_value=0.0, max_value=30.0, value=9.2, step=0.05)
 
 if st.sidebar.button("Calcular Liquidación"):
     res = liquidar_bono(
-        f_emision, f_vcto, f_nego, 
+        f_emision, f_vcto, f_nego,
         tasa_facial_pct / 100, tasa_nego_pct / 100
     )
-    
+
     if res:
         st.subheader("Resultados de la Valoración")
-        
+
         col1, col2 = st.columns(2)
         with col1:
             st.metric(label="Precio Limpio (Clean Price)", value=f"{res['Precio Limpio']:.4f}%")
-            st.metric(label="Intereses Corridos", value=f"{res['Intereses Corridos']:.4f}%")
+            st.metric(label="Intereses Corridos",          value=f"{res['Intereses Corridos']:.4f}%")
         with col2:
-            st.metric(label="Precio Sucio (Dirty Price)", value=f"{res['Precio Sucio']:.4f}%")
-            st.metric(label="Días Corridos del Cupón", value=f"{res['Dias Corridos']} días")
-            
+            st.metric(label="Precio Sucio (Dirty Price)",  value=f"{res['Precio Sucio']:.4f}%")
+            st.metric(label="Días Corridos del Cupón",     value=f"{res['Dias Corridos']} días")
+
         st.info(f"📅 El próximo pago de cupón es el: **{res['Proximo Cupon'].strftime('%Y-%m-%d')}**")
