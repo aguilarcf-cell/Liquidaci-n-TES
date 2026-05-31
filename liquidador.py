@@ -66,6 +66,9 @@ def liquidar_bono(f_emision, f_vcto, f_nego, tasa_facial, tasa_nego, periodicida
 # --- INTERFAZ GRÁFICA DE STREAMLIT ---
 st.set_page_config(page_title="Liquidador de TES", page_icon="📈", layout="centered")
 
+# Reemplaza la URL de ejemplo por tu nuevo enlace entre las comillas
+url_de_tu_logo = "https://i.postimg.cc/hjD3N0Qs/IMG-6998.png" 
+st.markdown(f'<link rel="apple-touch-icon" href="{url_de_tu_logo}">', unsafe_allow_html=True)
 st.title("📈 Liquidador de Bonos de Largo Plazo (TES)")
 st.markdown("Introduce los parámetros del título para calcular el precio limpio y sucio.")
 
