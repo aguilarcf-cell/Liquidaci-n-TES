@@ -1,10 +1,9 @@
 import streamlit as st
 from datetime import datetime
 
-# ⚠️ set_page_config SIEMPRE debe ser la primera línea de Streamlit
 st.set_page_config(
     page_title="Liquidador de TES",
-    page_icon="📈",
+    page_icon="📈",   # <- cambia el emoji por el que más te guste
     layout="centered"
 )
 
