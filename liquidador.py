@@ -3,7 +3,7 @@ from datetime import datetime
 
 st.set_page_config(
     page_title="Liquidador de TES",
-    page_icon="📈",   # <- cambia el emoji por el que más te guste
+    page_icon="💲",   # <- cambia el emoji por el que más te guste
     layout="centered"
 )
 
