@@ -13,9 +13,13 @@ url_logo = "https://i.postimg.cc/hjD3N0Qs/IMG-6998.png"
 
 st.markdown(
     f"""
-    <link rel="apple-touch-icon" sizes="180x180" href="{url_logo}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{url_logo}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{url_logo}">
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'apple-touch-icon';
+        link.sizes = '180x180';
+        link.href = '{url_logo}';
+        document.head.appendChild(link);
+    </script>
     """,
     unsafe_allow_html=True
 )
